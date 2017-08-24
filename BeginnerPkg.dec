@@ -1,0 +1,12 @@
+[Defines]
+  DEC_SPECIFICATION              = 0x00010005
+  PACKAGE_NAME                   = BeginnerPkg
+  PACKAGE_GUID                   = 61a24c2b-d4ad-4a7e-acea-05ebeb595fb0
+  PACKAGE_VERSION                = 0.01
+
+[Includes]
+
+[Guids]
+
+[PcdsFixedAtBuild]
+

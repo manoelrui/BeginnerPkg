@@ -1,0 +1,22 @@
+[Defines]
+  INF_VERSION                    = 0x00010006
+  BASE_NAME                      = HelloUEFI
+  FILE_GUID                      = 5d370eca-8bf3-45a4-8cd7-c55aa0a97784
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 0.1
+  ENTRY_POINT                    = ShellCEntryLib
+
+#
+#  VALID_ARCHITECTURES           = IA32 X64 IPF
+#
+
+[Sources]
+  HelloUEFI.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  ShellPkg/ShellPkg.dec
+
+[LibraryClasses]
+  UefiLib
+  ShellCEntryLib
