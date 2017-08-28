@@ -1,0 +1,35 @@
+[Defines]
+  INF_VERSION                    = 0x00010006
+  BASE_NAME                      = LoadImageApp
+  FILE_GUID                      = 7bc1a7f5-ab32-49c3-b1ca-57bae17cb1f9
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 0.1
+  ENTRY_POINT                    = UefiMain
+
+#
+#  VALID_ARCHITECTURES           = IA32 X64 IPF
+#
+
+[Sources]
+  LoadImageApp.c
+
+[Packages]
+  BeginnerPkg/BeginnerPkg.dec
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+
+[LibraryClasses]
+  UefiApplicationEntryPoint
+  UefiLib
+  UefiBootServicesTableLib
+  BaseLib
+  DebugLib
+  MemoryAllocationLib
+  BaseMemoryLib
+
+[Protocols]
+  gEfiSimpleFileSystemProtocolGuid
+  gEfiBlockIoProtocolGuid
+
+[Guids]
+  gEfiFileSystemInfoGuid

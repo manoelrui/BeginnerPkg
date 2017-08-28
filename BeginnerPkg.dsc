@@ -45,4 +45,4 @@
 
 #### Applications.
   BeginnerPkg/Applications/HelloUEFI/HelloUEFI.inf        # No LibC includes or functions
-
+  BeginnerPkg/Applications/LoadImageApp/LoadImageApp.inf
