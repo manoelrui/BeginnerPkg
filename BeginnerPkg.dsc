@@ -44,5 +44,6 @@
 [Components]
 
 #### Applications.
+  BeginnerPkg/Applications/LoadImageApp/LoadImageApp.inf
   BeginnerPkg/Applications/HelloImageEntryPoint/HelloImageEntryPoint.inf
   BeginnerPkg/Applications/HelloUEFI/HelloUEFI.inf        # No LibC includes or functions

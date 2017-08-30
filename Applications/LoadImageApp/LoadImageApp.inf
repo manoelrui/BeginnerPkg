@@ -30,6 +30,7 @@
 [Protocols]
   gEfiSimpleFileSystemProtocolGuid
   gEfiBlockIoProtocolGuid
+  gEfiLoadedImageProtocolGuid
 
 [Guids]
   gEfiFileSystemInfoGuid
