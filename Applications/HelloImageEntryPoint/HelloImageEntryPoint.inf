@@ -1,0 +1,22 @@
+[Defines]
+  INF_VERSION                    = 0x00010006
+  BASE_NAME                      = HelloImageEntryPoint
+  FILE_GUID                      = 5aa4c1cc-83c1-43ff-aa41-5ff0476282fc
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 0.1
+  ENTRY_POINT                    = UefiMain
+
+#
+#  VALID_ARCHITECTURES           = IA32 X64 IPF
+#
+
+[Sources]
+  HelloImageEntryPoint.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  BeginnerPkg/BeginnerPkg.dec
+
+[LibraryClasses]
+  UefiApplicationEntryPoint
+  UefiLib
