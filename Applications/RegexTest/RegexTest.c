@@ -5,6 +5,7 @@
 #include <Protocol/RegularExpressionProtocol.h>
 #include <Library/DebugLib.h>
 #include <Library/BaseMemoryLib.h>
+#include <Library/MemoryAllocationLib.h>
 
 
 EFI_STATUS
@@ -32,9 +33,10 @@ UefiMain (
 	UINTN RegExSyntaxTypeListSize = ARRAY_SIZE(RegExSyntaxTypeList);
 	INT8 i = 0;
 	INT8 j = 0;
+	BOOLEAN Res = FALSE;
+	UINTN CapturesCount = 0;
+	EFI_REGEX_CAPTURE* Captures = NULL;
 
-
-	extern EFI_GUID gEfiRegularExpressionProtocolGuid;
 
 	Status = gBS->LocateHandleBuffer(
 				ByProtocol,
@@ -45,8 +47,7 @@ UefiMain (
 				);
 
 	if(EFI_ERROR(Status)) {
-		DEBUG((DEBUG_ERROR, "Could not locate Regular Expression handle\n"));
-		Print(L"Could not locate Regular Expression handle - %r\n", Status);
+		DEBUG ((DEBUG_ERROR, "ERROR: Could not locate Regular Expression handle (Err:%r)\n", Status));
 		return Status;
 	}
 
@@ -60,8 +61,7 @@ UefiMain (
 			);
 
 	if(EFI_ERROR(Status)) {
-		DEBUG((DEBUG_ERROR, "Could not open the Regular Expression Protocol\n"));
-		Print(L"Could not open the Regular Expression Protocol - %r\n", Status);
+		DEBUG ((DEBUG_ERROR, "ERROR: Could not open the Regular Expression Protocol (Err:%r)\n", Status));
 		return Status;
 	}
 
@@ -72,8 +72,7 @@ UefiMain (
 			);
 
 	if(EFI_ERROR(Status)) {
-		DEBUG((DEBUG_ERROR, "Regex GetInfo fail"));
-		Print(L"Regex GetInfo fail - %r\n", Status);
+		DEBUG ((DEBUG_ERROR, "ERROR: Regex GetInfo fail (Err:%r)\n", Status));
 		return Status;
 	}
 
@@ -86,6 +85,31 @@ UefiMain (
 				Print(L"Syntax supported: %s\n", SyntaxTypesStr[j]);
 			}
 		}
+	}
+
+	Status = RegexProtocol->MatchString(
+			RegexProtocol,
+			L"zzzzaffffffffb",
+			L"a(.*)b|[e-f]+",
+			NULL,
+			&Res,
+			&Captures,
+			&CapturesCount
+		);
+
+	if(EFI_ERROR(Status)) {
+		DEBUG ((DEBUG_ERROR, "ERROR: Match string failed (Err:%r)\n", Status));
+		return Status;
+	}
+
+	Print(L"\n");
+	Print(L"Captures count: %d\n", CapturesCount);
+	for(i = 0; i < CapturesCount; i++) {
+		CHAR16 *StrOut = (CHAR16*) AllocateZeroPool((Captures[i].Length + 1) * sizeof(CHAR16));
+		CopyMem(StrOut, Captures[i].CapturePtr, Captures[i].Length * sizeof(CHAR16));
+		StrOut[Captures[i].Length] = '\0';
+		Print(L"Str output [%d]: %s - Length: %d\n", i, StrOut, Captures[i].Length);
+		FreePool(StrOut);
 	}
 
   return Status;

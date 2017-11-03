@@ -11,9 +11,13 @@
 #
 #  Debug output control
 #
-  DEFINE DEBUG_ENABLE_OUTPUT      = TRUE       # Set to TRUE to enable debug output
+  DEFINE DEBUG_ENABLE_OUTPUT      = TRUE        # Set to TRUE to enable debug output
   DEFINE DEBUG_PRINT_ERROR_LEVEL  = 0x80000040  # Flags to control amount of debug output
-  DEFINE DEBUG_PROPERTY_MASK      = 0
+  DEFINE DEBUG_PROPERTY_MASK      = 0xFF
+
+[PcdsFixedAtBuild]
+    gEfiMdePkgTokenSpaceGuid.PcdDebugPropertyMask|$(DEBUG_PROPERTY_MASK)
+    gEfiMdePkgTokenSpaceGuid.PcdDebugPrintErrorLevel|$(DEBUG_PRINT_ERROR_LEVEL)
 
 [LibraryClasses]
   #
@@ -32,12 +36,33 @@
   MemoryAllocationLib|MdePkg/Library/UefiMemoryAllocationLib/UefiMemoryAllocationLib.inf
   UefiBootServicesTableLib|MdePkg/Library/UefiBootServicesTableLib/UefiBootServicesTableLib.inf
   UefiRuntimeServicesTableLib|MdePkg/Library/UefiRuntimeServicesTableLib/UefiRuntimeServicesTableLib.inf
-  !if $(DEBUG_ENABLE_OUTPUT)
-    DebugLib|MdePkg/Library/UefiDebugLibConOut/UefiDebugLibConOut.inf
-    DebugPrintErrorLevelLib|MdePkg/Library/BaseDebugPrintErrorLevelLib/BaseDebugPrintErrorLevelLib.inf
-  !else   ## DEBUG_ENABLE_OUTPUT
+
+  #
+  # Ovmf setup
+  #
+  TimerLib|OvmfPkg/Library/AcpiTimerLib/DxeAcpiTimerLib.inf
+  SerialPortLib|PcAtChipsetPkg/Library/SerialIoLib/SerialIoLib.inf
+
+  !if $(TARGET) == DEBUG
+    !if $(DEBUG_ON_SERIAL_PORT)
+      DebugLib|MdePkg/Library/BaseDebugLibSerialPort/BaseDebugLibSerialPort.inf
+      DebugPrintErrorLevelLib|MdePkg/Library/BaseDebugPrintErrorLevelLib/BaseDebugPrintErrorLevelLib.inf
+    !else
+      DebugLib|MdePkg/Library/UefiDebugLibConOut/UefiDebugLibConOut.inf
+      DebugPrintErrorLevelLib|MdePkg/Library/BaseDebugPrintErrorLevelLib/BaseDebugPrintErrorLevelLib.inf
+    !endif
+  !else
     DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
-  !endif  ## DEBUG_ENABLE_OUTPUT
+  !endif
+
+  !if $(SOURCE_DEBUG_ENABLE)
+    PeCoffExtraActionLib|SourceLevelDebugPkg/Library/PeCoffExtraActionLibDebug/PeCoffExtraActionLibDebug.inf
+    DebugCommunicationLib|SourceLevelDebugPkg/Library/DebugCommunicationLibSerialPort/DebugCommunicationLibSerialPort.inf
+  !else
+    PeCoffExtraActionLib|MdePkg/Library/BasePeCoffExtraActionLibNull/BasePeCoffExtraActionLibNull.inf
+    DebugAgentLib|MdeModulePkg/Library/DebugAgentLibNull/DebugAgentLibNull.inf
+  !endif
+
 
   DevicePathLib|MdePkg/Library/UefiDevicePathLib/UefiDevicePathLib.inf
   
