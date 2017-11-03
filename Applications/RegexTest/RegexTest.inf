@@ -1,0 +1,22 @@
+[Defines]
+  MODULE_TYPE    =  UEFI_APPLICATION
+  INF_VERSION    =  0x00010006
+  BASE_NAME      =  RegexTest
+  VERSION_STRING =  0.1
+  FILE_GUID      =  7beb8601-8072-499e-82e0-e5f1986729bb
+  ENTRY_POINT    =  UefiMain
+
+[Sources]
+  RegexTest.c
+
+[Packages]
+  MdePkg/MdePkg.dec  
+  BeginnerPkg/BeginnerPkg.dec
+  
+[Protocols]
+  gEfiRegularExpressionProtocolGuid # CONSUMED
+
+[LibraryClasses]
+  UefiLib
+  UefiApplicationEntryPoint
+  DebugLib

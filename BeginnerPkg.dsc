@@ -11,7 +11,7 @@
 #
 #  Debug output control
 #
-  DEFINE DEBUG_ENABLE_OUTPUT      = FALSE       # Set to TRUE to enable debug output
+  DEFINE DEBUG_ENABLE_OUTPUT      = TRUE       # Set to TRUE to enable debug output
   DEFINE DEBUG_PRINT_ERROR_LEVEL  = 0x80000040  # Flags to control amount of debug output
   DEFINE DEBUG_PROPERTY_MASK      = 0
 
@@ -47,3 +47,4 @@
   BeginnerPkg/Applications/LoadImageApp/LoadImageApp.inf
   BeginnerPkg/Applications/HelloImageEntryPoint/HelloImageEntryPoint.inf
   BeginnerPkg/Applications/HelloUEFI/HelloUEFI.inf        # No LibC includes or functions
+  BeginnerPkg/Applications/RegexTest/RegexTest.inf        # No LibC includes or functions
