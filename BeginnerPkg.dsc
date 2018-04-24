@@ -71,5 +71,5 @@
 #### Applications.
   BeginnerPkg/Applications/LoadImageApp/LoadImageApp.inf
   BeginnerPkg/Applications/HelloImageEntryPoint/HelloImageEntryPoint.inf
-  BeginnerPkg/Applications/HelloUEFI/HelloUEFI.inf        # No LibC includes or functions
+  BeginnerPkg/Applications/HelloShellUEFI/HelloShellUEFI.inf        # No LibC includes or functions
   BeginnerPkg/Applications/RegexTest/RegexTest.inf        # No LibC includes or functions
