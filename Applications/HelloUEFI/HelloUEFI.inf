@@ -8,7 +8,7 @@
   VALID_ARCHITECTURES            = IA32 X64 IPF
 
 [Sources]
-  HelloImageEntryPoint.c
+  HelloUEFI.c
 
 [Packages]
   MdePkg/MdePkg.dec
