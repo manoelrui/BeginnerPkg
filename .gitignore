@@ -1,2 +1,3 @@
 QEMU/hda/*
 QEMU/OVMF.fd
+serial_output.txt
