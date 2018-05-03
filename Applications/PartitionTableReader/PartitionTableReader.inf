@@ -13,12 +13,14 @@
 [Packages]
   MdePkg/MdePkg.dec
   BeginnerPkg/BeginnerPkg.dec
+  ShellPkg/ShellPkg.dec
 
 [LibraryClasses]
   UefiApplicationEntryPoint
   UefiLib
   UefiBootServicesTableLib
   MemoryAllocationLib
+  ShellCommandLib
 
 [Protocols]
   gEfiBlockIoProtocolGuid

@@ -2,20 +2,22 @@
 #include <Library/UefiLib.h>
 #include <Library/UefiApplicationEntryPoint.h>
 #include <Library/UefiBootServicesTableLib.h>
+#include <Library/ShellCommandLib.h>
 #include <Library/MemoryAllocationLib.h>
 #include <Protocol/BlockIo.h>
+
 
 EFI_STATUS
 EFIAPI
 UefiMain (
-    IN EFI_HANDLE ImageHandle,
-    IN EFI_SYSTEM_TABLE *SystemTable
-)
+  IN EFI_HANDLE ImageHandle,
+  IN EFI_SYSTEM_TABLE *SystemTable
+  )
 {
     EFI_STATUS Status = EFI_SUCCESS;
     EFI_HANDLE *Handles = NULL;
     EFI_BLOCK_IO_PROTOCOL *BlockIo = NULL;
-    UINTN BufferSize = 0;
+    UINTN NumHandles = 0;
     CHAR8 *BlockBuffer = NULL;
     UINTN BlockSize = 0;
 
@@ -23,57 +25,60 @@ UefiMain (
             ByProtocol,
             &gEfiBlockIoProtocolGuid,
             NULL,
-            &BufferSize,
+            &NumHandles,
             &Handles
             );
 
     if (EFI_ERROR(Status)) {
-        Print(L"Error to locate handle\n");
+        Print(L"Error to locate handle - %r\n", Status);
         goto FREE_RESOURCES;
     }
 
-    if (BufferSize < 1) {
-        Print(L"There is not any Block IO Protocol\n");
+    if (NumHandles < 1) {
+        Print(L"There is not any Block IO Protocol - %r\n", Status);
         goto FREE_RESOURCES;
     }
 
-    Status = gBS->OpenProtocol(
-            Handles[0],
-            &gEfiBlockIoProtocolGuid,
-            (VOID**) &BlockIo,
-            ImageHandle,
-            NULL,
-            EFI_OPEN_PROTOCOL_GET_PROTOCOL  
-            );
+    for (UINTN Index = 0; Index < NumHandles; Index++) {
 
-    if (EFI_ERROR(Status)) {
-        Print(L"Error to open Block IO protocol\n");
-        goto FREE_RESOURCES;
+        Status = gBS->OpenProtocol(
+                Handles[Index],
+                &gEfiBlockIoProtocolGuid,
+                (VOID**) &BlockIo,
+                ImageHandle,
+                NULL,
+                EFI_OPEN_PROTOCOL_GET_PROTOCOL  
+                );
+
+        if (EFI_ERROR(Status)) {
+            Print(L"Error to open Block IO protocol - %r\n", Status);
+            goto FREE_RESOURCES;
+        }
+
+        BlockSize = BlockIo->Media->BlockSize;
+        BlockBuffer = AllocateZeroPool(BlockSize);
+
+        Print(L"Block Size: %d\n", BlockSize);
+        Print(L"Media ID: %d\n", BlockIo->Media->MediaId);
+        Status = BlockIo->ReadBlocks(
+                BlockIo,
+                BlockIo->Media->MediaId,
+                (EFI_LBA) 0,
+                BlockSize,
+                BlockBuffer
+                );
+
+        if (EFI_ERROR(Status)) {
+            Print(L"Error to read blocks - %r\n", Status);
+            goto FREE_RESOURCES;
+        }
+
+        DumpHex(0, 0, BlockSize, BlockBuffer);
+
+        FreePool(BlockBuffer);
+        BlockBuffer = NULL;
+
     }
-
-    BlockSize = BlockIo->Media->BlockSize;
-    BlockBuffer = AllocateZeroPool(BlockSize);
-
-    Print(L"Block Size: %d\n", BlockSize);
-
-    Status = BlockIo->ReadBlocks(
-            BlockIo,
-            BlockIo->Media->MediaId,
-            (EFI_LBA) 0,
-            BlockSize,
-            BlockBuffer
-            );
-
-    if (EFI_ERROR(Status)) {
-        Print(L"Error to read blocks\n");
-        goto FREE_RESOURCES;
-    }
-
-    Print(L"Block #0 of first device found:\n");
-    for (UINTN It = 0; It < BlockSize / sizeof(CHAR8); It++) {
-        Print(L"%x", BlockBuffer[0]);
-    }
-    Print(L"\n");
 
 FREE_RESOURCES:
 
@@ -86,4 +91,5 @@ FREE_RESOURCES:
     }
 
     return EFI_SUCCESS;
+
 }
