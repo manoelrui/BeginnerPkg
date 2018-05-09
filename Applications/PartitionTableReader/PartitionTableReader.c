@@ -8,26 +8,42 @@
 #include <Protocol/BlockIo.h>
 
 
-UINT8 PARTITION_TABLE_SIGNATURE[] = {0x45, 0x46, 0x49, 0x20, 0x50, 0x41, 0x52, 0x54};
+CHAR8 PARTITION_TABLE_SIGNATURE[] = {0x54, 0x52, 0x41, 0x50, 0x20, 0x49, 0x46, 0x45};
 
 struct _GPT_HEADER {
-    UINT8 Signature[8];
-    UINT8 Revision[4];
-    UINT8 HeaderSize[4];
-    UINT8 HeaderCRC32[4];
-    UINT8 Reserved0[4];
-    UINT8 MyLBA[8];
-    UINT8 AlternateLBA[8];
-    UINT8 FirstUsableLBA[8];
-    UINT8 LastUsableLBA[8];
-    UINT8 DiskGUID[16];
-    UINT8 PartitionEntryLBA[8];
-    UINT8 NumberOfPartitionEntries[4];
-    UINT8 SizeOfPartitionEntry[4];
-    UINT8 PartitionEntryArrayCRC32[4];
+    CHAR8 Signature[8];
+    CHAR8 Revision[4];
+    CHAR8 HeaderSize[4];
+    CHAR8 HeaderCRC32[4];
+    CHAR8 Reserved0[4];
+    CHAR8 MyLBA[8];
+    CHAR8 AlternateLBA[8];
+    CHAR8 FirstUsableLBA[8];
+    CHAR8 LastUsableLBA[8];
+    CHAR8 DiskGUID[16];
+    CHAR8 PartitionEntryLBA[8];
+    CHAR8 NumberOfPartitionEntries[4];
+    CHAR8 SizeOfPartitionEntry[4];
+    CHAR8 PartitionEntryArrayCRC32[4];
 };
 
 typedef struct _GPT_HEADER GPT_HEADER;
+
+CHAR8*
+EFIAPI
+SwapArray(
+    IN CHAR8 *Buffer,
+    IN UINTN BufferSize
+    ) 
+{
+    for (UINTN It = 0; It < BufferSize / 2; It++) {
+        CHAR8 Temp = Buffer[It];
+        Buffer[It] = Buffer[BufferSize - It - 1];
+        Buffer[BufferSize - It - 1] = Temp;
+    }
+
+    return Buffer;
+}
 
 VOID
 EFIAPI
@@ -49,6 +65,10 @@ PrintGPTHeader (
     IN  GPT_HEADER* Header
     ) 
 {
+    Print(L"Signature: ");
+    PrintBuffer(Header->Signature, sizeof(Header->Signature));
+    Print(L"\n");
+
     Print(L"Revision: ");
     PrintBuffer((CHAR8*) Header->Revision, sizeof(Header->Revision));
     Print(L"\n");
@@ -100,8 +120,6 @@ PrintGPTHeader (
     Print(L"PartitionEntryArrayCRC32: ");
     PrintBuffer((CHAR8*) Header->PartitionEntryArrayCRC32, sizeof(Header->PartitionEntryArrayCRC32));
     Print(L"\n");
-
-
 }
 
 EFI_STATUS
@@ -175,6 +193,7 @@ UefiMain (
         }
 
         GPT_HEADER *Header = (GPT_HEADER*) BlockBuffer;
+        SwapArray(Header->Signature, sizeof(Header->Signature));
         if (CompareMem(Header->Signature, PARTITION_TABLE_SIGNATURE, sizeof(Header->Signature)) == 0) {
             Print(L"GPT Header:\n\n");
             PrintGPTHeader(Header);        
